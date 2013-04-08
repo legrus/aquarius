@@ -13,10 +13,10 @@
 }
 #cold {
     color: blue;
-} 
+}
 #hot {
     color: red;
-} 
+}
 </style>
 
 <script type="text/javascript">
@@ -39,7 +39,7 @@ $(document).ready(function() {
                         var seriesC = this.series[0];
                         var seriesH = this.series[1];
                         setInterval(function() {
-                            $.get('/getpower', {}, function(data, status, xhr) {
+                            $.get('/last', {}, function(data, status, xhr) {
                                 var x = (new Date()).getTime(), // current time
                                     cold = data.cold,
 					hot = data.hot;
@@ -98,7 +98,7 @@ $(document).ready(function() {
                     }
                     return data;
                 })()
-            }, 
+            },
             {
                 name: 'Горячая вода',
                 data: (function() {
