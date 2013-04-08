@@ -1,0 +1,127 @@
+<html>
+<title>Расход воды</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="highcharts/js/highcharts.js"></script>
+
+<style type="text/css">
+.gauge {
+    min-width: 400px;
+    height: 100px;
+    margin: 0 auto;
+    float:left;
+    font:30px arial,sans-serif;
+}
+#cold {
+    color: blue;
+} 
+#hot {
+    color: red;
+} 
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+        var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                type: 'spline',
+                marginRight: 10,
+                events: {
+                    load: function() {
+
+                        // set up the updating of the chart each second
+                        var seriesC = this.series[0];
+                        var seriesH = this.series[1];
+                        setInterval(function() {
+                            $.get('/getpower', {}, function(data, status, xhr) {
+                                var x = (new Date()).getTime(), // current time
+                                    cold = data.cold,
+					hot = data.hot;
+                                seriesC.addPoint([x, cold], true, true);
+                                seriesH.addPoint([x, hot], true, true);
+                                $('#cold').html(cold);
+                                $('#hot').html(hot);
+                            });
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Расход воды'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Объём, м³'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Холодная вода',
+                data: (function() {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -19; i <= 0; i++) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                })()
+            }, 
+            {
+                name: 'Горячая вода',
+                data: (function() {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -19; i <= 0; i++) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                })()
+            }]
+        });
+
+});
+</script>
+
+<div class="gauge" >Холодная вода: <span id="cold">0.0</span> м<sup>3</sup></div>
+<div class="gauge" >Горячая вода: <span id="hot">0.0</span> м<sup>3</sup></div>
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto; clear:both"></div>
+</html>

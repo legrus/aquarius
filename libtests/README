@@ -1,0 +1,2 @@
+These files were intended to test which of the node.js modules can actually
+subscribe to Raspberry Pi GPIO interrupts. 'onoff' proved the best.
